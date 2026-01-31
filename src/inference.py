@@ -18,11 +18,10 @@ def main():
 
     if not x_test_path.exists():
         raise FileNotFoundError(
-            f"No existe {x_test_path}. Primero genera X_test con prep.py (debe guardarse en data/inference/)."
-        )
+            f"No existe {x_test_path}. 
     if not model_path.exists():
         raise FileNotFoundError(
-            f"No existe {model_path}. Primero corre: uv run python -m src.train"
+            f"No existe {model_path}
         )
 
     X_test = pd.read_csv(x_test_path)
