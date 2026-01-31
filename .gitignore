@@ -1,0 +1,29 @@
+# --- entorno ---
+.venv/
+venv/
+env/
+
+# --- python cache ---
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# --- jupyter ---
+.ipynb_checkpoints/
+
+# --- artifacts generados ---
+artifacts/*.joblib
+artifacts/*.pkl
+artifacts/*.json
+artifacts/*.png
+artifacts/*.pdf
+
+# --- outputs de datos (se regeneran con scripts) ---
+data/prep/
+data/inference/
+data/predictions/
+
+# --- misc ---
+.DS_Store
+Thumbs.db
+.vscode/

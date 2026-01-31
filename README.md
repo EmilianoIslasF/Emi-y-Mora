@@ -1,33 +1,68 @@
-Emiliano Islas 
-y
-Raúl Mora
+.
 
-METODOS DE GRAN ESCALA 
+├── .gitignore
 
+├── 1C\_Reporte.pdf
 
+├── README.md
 
-Tarea 01. Predicción de Demanda en Retail con Machine Learning
+├── artifacts
 
+├── data
 
-Flujo de trabajo (3 scripts): 
+│   ├── inference
 
+│   │   └── X\_test.csv
 
------Exploración y entendimiento de datos (eda01.ipynb)
-Análisis descriptivo de ventas diarias y mensuales, identificación de alta dispersión en ventas y patrones básicos por tienda, producto y categoría.
+│   ├── predictions
 
+│   │   └── submission.csv
 
------Transformación y preparación de features (transform_features.ipynb)
-Agregación de ventas a nivel mensual
-Creación de variables rezagadas (lags de 1, 2, 3, 6 y 12 meses), clipping del target para estabilizar el entrenamiento,construcción de datasets de entrenamiento, 
-validación y test.
+│   ├── prep
 
-------Entrenamiento, evaluación y predicción (Entre_eval_prediccion.ipynb)
+│   │   ├── X\_test.csv
 
+│   │   ├── X\_train.csv
 
+│   │   ├── X\_valid.csv
 
-Entrenamiento de modelos (Ridge y Gradient Boosting), evaluación con métricas RMSE, MAE, R² y MAPE, comparación entre modelos, generación de predicciones finales
-para Kaggle (submission.csv) y guardado del modelo final (modelo_final.joblib)
+│   │   ├── y\_train.csv
 
-El proyecto utiliza uv para la gestión de dependencias. Para reproducir el entorno:
-uv sync
+│   │   └── y\_valid.csv
+
+│   └── raw
+
+│       ├── item\_categories.csv
+
+│       ├── items.csv
+
+│       ├── sales\_train.csv
+
+│       ├── sample\_submission.csv
+
+│       ├── shops.csv
+
+│       └── test.csv
+
+├── notebooks
+
+│   ├── Entre\_eval\_prediccion.ipynb
+
+│   ├── eda01.ipynb
+
+│   └── transform\_fitures.ipynb
+
+├── pyproject.toml
+
+├── src
+
+│   ├── \_\_init\_\_.py
+
+│   ├── inference.py
+
+│   ├── prep.py
+
+│   └── train.py
+
+└── uv.lock
 
