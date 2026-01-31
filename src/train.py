@@ -22,7 +22,7 @@ def main():
 
     X_valid = pd.read_csv(prep_dir / "X_valid.csv")
     y_valid = pd.read_csv(prep_dir / "y_valid.csv")["item_cnt_month"]
-    print("🚀 Starting training...")
+    print("Starting training...")
     # 1) Baseline Ridge (como en tu notebook)
     model_ridge = Ridge(alpha=1.0)
     model_ridge.fit(X_train, y_train)
@@ -70,7 +70,7 @@ def main():
     }
     (art_dir / "metrics.json").write_text(json.dumps(metrics, indent=2), encoding="utf-8")
 
-    print("✅ Train listo")
+    print("Train listo")
     print(f"   Modelo guardado en: {model_path}")
     print(f"   RMSE valid (Ridge): {rmse_ridge:.4f}")
     print(f"   RMSE valid (GBR):   {rmse_gbr:.4f}")
