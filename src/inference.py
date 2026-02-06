@@ -1,49 +1,103 @@
+"""
+Inferencia / predicción en batch.
+
+Qué hace:
+1) Carga X_test (features) desde data/inference
+2) Carga IDs desde data/raw/test.csv
+3) Carga el modelo entrenado desde artifacts
+4) Genera predicciones (con clipping)
+5) Guarda submission.csv en data/predictions
+"""
+
+import logging
 from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import joblib
 
+from src.utils.paths import RAW_DIR, INFERENCE_DIR, PREDICTIONS_DIR, ARTIFACTS_DIR
 
-def main():
-    ROOT = Path(__file__).resolve().parents[1]
 
-    inf_dir  = ROOT / "data" / "inference"
-    pred_dir = ROOT / "data" / "predictions"
-    art_dir  = ROOT / "artifacts"
+# -------------------------------
+# Logging básico
+# -------------------------------
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s"
+)
+logger = logging.getLogger(__name__)
 
-    pred_dir.mkdir(parents=True, exist_ok=True)
 
-    x_test_path = inf_dir / "X_test.csv"
-    model_path  = art_dir / "model.joblib"
+CLIP_MIN, CLIP_MAX = 0, 20
 
+
+def main() -> None:
+    logger.info("Inicio del script inference.py")
+
+    # Crear carpeta de predicciones
+    PREDICTIONS_DIR.mkdir(parents=True, exist_ok=True)
+
+    x_test_path = INFERENCE_DIR / "X_test.csv"
+    raw_test_path = RAW_DIR / "test.csv"
+    model_path = ARTIFACTS_DIR / "model.joblib"
+
+    # -------------------------------
+    # Validaciones
+    # -------------------------------
     if not x_test_path.exists():
-        raise FileNotFoundError(
-            f"No existe {x_test_path}. 
+        raise FileNotFoundError(f"No existe {x_test_path}")
+
+    if not raw_test_path.exists():
+        raise FileNotFoundError(f"No existe {raw_test_path}")
+
     if not model_path.exists():
-        raise FileNotFoundError(
-            f"No existe {model_path}
-        )
+        raise FileNotFoundError(f"No existe {model_path}")
 
+    # -------------------------------
+    # Cargar datos
+    # -------------------------------
+    logger.info(f"Cargando X_test desde {x_test_path}")
     X_test = pd.read_csv(x_test_path)
+    logger.info(f"X_test shape: {X_test.shape}")
 
-    
-    if "ID" not in X_test.columns:
-        raise ValueError("X_test.csv debe incluir columna ID para poder guardar submission.csv (ID, item_cnt_month).")
+    logger.info(f"Cargando IDs desde {raw_test_path}")
+    raw_test = pd.read_csv(raw_test_path)
 
-    ids = X_test["ID"].copy()
-    X_feat = X_test.drop(columns=["ID"])
+    if "ID" not in raw_test.columns:
+        raise ValueError("test.csv debe incluir columna 'ID'")
 
+    ids = raw_test["ID"].copy()
+
+    # -------------------------------
+    # Cargar modelo
+    # -------------------------------
+    logger.info(f"Cargando modelo desde {model_path}")
     model = joblib.load(model_path)
-    preds = model.predict(X_feat)
-    preds = np.clip(preds, 0, 20)
 
-    submission = pd.DataFrame({"ID": ids, "item_cnt_month": preds})
-    out_path = pred_dir / "submission.csv"
+    # -------------------------------
+    # Predicción
+    # -------------------------------
+    logger.info("Generando predicciones")
+    preds = model.predict(X_test)
+    preds = np.clip(preds, CLIP_MIN, CLIP_MAX)
+
+    # -------------------------------
+    # Crear submission
+    # -------------------------------
+    submission = pd.DataFrame({
+        "ID": ids,
+        "item_cnt_month": preds
+    })
+
+    out_path = PREDICTIONS_DIR / "submission.csv"
     submission.to_csv(out_path, index=False)
 
-    print("✅ Inference listo")
-    print(f"   Predicciones guardadas en: {out_path}")
+    logger.info("Inference finalizado correctamente")
+    logger.info(f"Submission guardado en: {out_path}")
+    logger.info(f"Total filas: {len(submission)}")
 
 
 if __name__ == "__main__":
     main()
+
