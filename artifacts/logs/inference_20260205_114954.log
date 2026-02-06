@@ -1,0 +1,4 @@
+2026-02-05 11:49:54,992 - inference - INFO - Logger inicializado. Archivo: C:\Users\emil_\Downloads\Emi-y-Mora\artifacts\logs\inference_20260205_114954.log
+2026-02-05 11:49:54,992 - inference - INFO - Inicio del script inference.py
+2026-02-05 11:49:54,992 - inference - INFO - Cargando X_test desde: C:\Users\emil_\Downloads\Emi-y-Mora\data\inference\X_test.csv
+2026-02-05 11:49:55,117 - inference - INFO - X_test shape: (214200, 11)

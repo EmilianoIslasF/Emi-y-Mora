@@ -1,0 +1,18 @@
+2026-02-05 10:53:22,098 - train - INFO - Logger inicializado. Archivo: C:\Users\emil_\Downloads\Emi-y-Mora\artifacts\logs\train_20260205_105322.log
+2026-02-05 10:53:22,098 - train - INFO - Inicio del script train.py
+2026-02-05 10:53:22,098 - train - INFO - Cargando datasets desde data/prep...
+2026-02-05 10:53:27,285 - train - INFO - X_train: (10675678, 11) | y_train: (10675678,)
+2026-02-05 10:53:27,285 - train - INFO - X_valid: (238172, 11) | y_valid: (238172,)
+2026-02-05 10:53:27,285 - train - INFO - Entrenando baseline Ridge...
+2026-02-05 10:53:28,407 - train - INFO - Ridge RMSE (valid, sin clip): 0.9806
+2026-02-05 10:53:28,408 - train - INFO - Entrenando modelo principal (GradientBoostingRegressor)...
+2026-02-05 11:19:09,346 - train - INFO - Métricas GBR (valid, con clip 0..20):
+2026-02-05 11:19:09,348 - train - INFO -   RMSE: 0.9655
+2026-02-05 11:19:09,348 - train - INFO -   MAE : 0.3427
+2026-02-05 11:19:09,348 - train - INFO -   R2  : 0.2779
+2026-02-05 11:19:09,348 - train - INFO -   MAPE: 0.7240
+2026-02-05 11:19:09,348 - train - INFO - Reentrenando con train + valid (X_all, y_all)...
+2026-02-05 11:42:29,779 - train - INFO - Reentrenado listo. X_all: (10913850, 11) | y_all: (10913850,)
+2026-02-05 11:42:29,805 - train - INFO - Modelo guardado en: C:\Users\emil_\Downloads\Emi-y-Mora\artifacts\model.joblib
+2026-02-05 11:42:29,805 - train - INFO - Métricas guardadas en: C:\Users\emil_\Downloads\Emi-y-Mora\artifacts\metrics.json
+2026-02-05 11:42:29,806 - train - INFO - train.py terminado correctamente en 2947.71 segundos

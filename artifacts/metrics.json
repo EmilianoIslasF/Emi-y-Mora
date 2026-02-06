@@ -1,0 +1,32 @@
+{
+  "rmse_ridge_valid": 0.9806157819368521,
+  "rmse_gbr_valid_clipped": 0.9654525028570242,
+  "mae_gbr_valid_clipped": 0.3426967236337557,
+  "r2_gbr_valid_clipped": 0.2779174957715824,
+  "mape_gbr_valid_clipped": 0.7240210993826123,
+  "target_clip": [
+    0,
+    20
+  ],
+  "features": [
+    "date_block_num",
+    "shop_id",
+    "item_id",
+    "item_category_id",
+    "month",
+    "year",
+    "item_cnt_month_lag_1",
+    "item_cnt_month_lag_2",
+    "item_cnt_month_lag_3",
+    "item_cnt_month_lag_6",
+    "item_cnt_month_lag_12"
+  ],
+  "model_name": "GradientBoostingRegressor",
+  "model_params": {
+    "n_estimators": 100,
+    "learning_rate": 0.05,
+    "max_depth": 4,
+    "random_state": 42
+  },
+  "seed": 42
+}
