@@ -7,135 +7,19 @@ Luego entrena un modelo baseline (Ridge) y un modelo principal (Gradient Boostin
 
 ---
 ## Estructura del repositorio 
-
-├── .git
-│   ├── HEAD
-│   ├── branches
-│   ├── config
-│   ├── description
-│   ├── hooks
-│   │   ├── applypatch-msg.sample
-│   │   ├── commit-msg.sample
-│   │   ├── fsmonitor-watchman.sample
-│   │   ├── post-update.sample
-│   │   ├── pre-applypatch.sample
-│   │   ├── pre-commit.sample
-│   │   ├── pre-merge-commit.sample
-│   │   ├── pre-push.sample
-│   │   ├── pre-rebase.sample
-│   │   ├── pre-receive.sample
-│   │   ├── prepare-commit-msg.sample
-│   │   ├── push-to-checkout.sample
-│   │   ├── sendemail-validate.sample
-│   │   └── update.sample
-│   ├── index
-│   ├── info
-│   │   └── exclude
-│   ├── logs
-│   │   ├── HEAD
-│   │   └── refs
-│   ├── objects
-│   │   ├── info
-│   │   └── pack
-│   ├── packed-refs
-│   └── refs
-│       ├── heads
-│       ├── remotes
-│       └── tags
-├── .gitignore
-├── .pylintrc
-├── .ruff_cache
-│   ├── .gitignore
-│   ├── 0.15.0
-│   │   └── 409948882473263137
-│   └── CACHEDIR.TAG
-├── .venv
-│   ├── .gitignore
-│   ├── .lock
-│   ├── CACHEDIR.TAG
-│   ├── bin
-│   │   ├── activate
-│   │   ├── activate.bat
-│   │   ├── activate.csh
-│   │   ├── activate.fish
-│   │   ├── activate.nu
-│   │   ├── activate.ps1
-│   │   ├── activate_this.py
-│   │   ├── deactivate.bat
-│   │   ├── debugpy
-│   │   ├── debugpy-adapter
-│   │   ├── f2py
-│   │   ├── fonttools
-│   │   ├── get_gprof
-│   │   ├── get_objgraph
-│   │   ├── httpx
-│   │   ├── ipython
-│   │   ├── ipython3
-│   │   ├── isort
-│   │   ├── isort-identify-imports
-│   │   ├── jlpm
-│   │   ├── jsonpointer
-│   │   ├── jsonschema
-│   │   ├── jupyter
-│   │   ├── jupyter-dejavu
-│   │   ├── jupyter-events
-│   │   ├── jupyter-execute
-│   │   ├── jupyter-kernel
-│   │   ├── jupyter-kernelspec
-│   │   ├── jupyter-lab
-│   │   ├── jupyter-labextension
-│   │   ├── jupyter-labhub
-│   │   ├── jupyter-migrate
-│   │   ├── jupyter-nbconvert
-│   │   ├── jupyter-run
-│   │   ├── jupyter-server
-│   │   ├── jupyter-troubleshoot
-│   │   ├── jupyter-trust
-│   │   ├── normalizer
-│   │   ├── numpy-config
-│   │   ├── pybabel
-│   │   ├── pydoc.bat
-│   │   ├── pyftmerge
-│   │   ├── pyftsubset
-│   │   ├── pygmentize
-│   │   ├── pyjson5
-│   │   ├── pylint
-│   │   ├── pylint-config
-│   │   ├── pyreverse
-│   │   ├── python -> /usr/bin/python3
-│   │   ├── python3 -> python
-│   │   ├── python3.12 -> python
-│   │   ├── ruff
-│   │   ├── send2trash
-│   │   ├── symilar
-│   │   ├── ttx
-│   │   ├── undill
-│   │   └── wsdump
-│   ├── etc
-│   │   └── jupyter
-│   ├── lib
-│   │   └── python3.12
-│   ├── lib64 -> lib
-│   ├── pyvenv.cfg
-│   └── share
-│       ├── applications
-│       ├── icons
-│       ├── jupyter
-│       └── man
-├── 1C_Reporte.pdf
-├── README.md
+.
 ├── artifacts
-│   ├── 1C_Reporte.pdf
 │   ├── logs
 │   │   ├── inference_20260205_114954.log
 │   │   ├── prep_20260205_103330.log
 │   │   ├── prep_20260206_180603.log
 │   │   └── train_20260205_105322.log
+│   ├── 1C_Reporte.pdf
 │   ├── metrics.json
 │   ├── model.joblib
 │   └── modelo_final.joblib
 ├── assets
-│   └── pylint_10of10.png.png
+│   └── pylint_10of10.png
 ├── data
 │   ├── predictions
 │   │   └── submission.csv
@@ -152,31 +36,24 @@ Luego entrena un modelo baseline (Ridge) y un modelo principal (Gradient Boostin
 │       ├── shops.csv
 │       └── test.csv
 ├── notebooks
-│   ├── .ipynb_checkpoints
-│   │   ├── Untitled-checkpoint.ipynb
-│   │   └── eda01-checkpoint.ipynb
 │   ├── Entre_eval_prediccion.ipynb
-│   ├── Untitled.ipynb
 │   ├── eda01.ipynb
 │   └── transform_fitures.ipynb
-├── pyproject.toml
 ├── src
+│   ├── utils
+│   │   ├── __init__.py
+│   │   ├── features.py
+│   │   ├── logging_config.py
+│   │   └── paths.py
 │   ├── __init__.py
-│   ├── __pycache__
-│   │   ├── __init__.cpython-312.pyc
-│   │   ├── inference.cpython-312.pyc
-│   │   ├── prep.cpython-312.pyc
-│   │   └── train.cpython-312.pyc
 │   ├── inference.py
 │   ├── prep.py
-│   ├── train.py
-│   └── utils
-│       ├── __init__.py
-│       ├── __pycache__
-│       ├── features.py
-│       ├── logging_config.py
-│       └── paths.py
+│   └── train.py
+├── 1C_Reporte.pdf
+├── README.md
+├── pyproject.toml
 └── uv.lock
+
 
 
 ## Instalación y setup 
