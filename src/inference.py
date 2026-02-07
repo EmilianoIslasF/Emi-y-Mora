@@ -10,29 +10,24 @@ Qué hace:
 """
 
 import logging
-from pathlib import Path
 
+import joblib
 import numpy as np
 import pandas as pd
-import joblib
 
-from src.utils.paths import RAW_DIR, INFERENCE_DIR, PREDICTIONS_DIR, ARTIFACTS_DIR
-
+from src.utils.paths import ARTIFACTS_DIR, INFERENCE_DIR, PREDICTIONS_DIR, RAW_DIR
 
 # -------------------------------
 # Logging básico
 # -------------------------------
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s | %(levelname)s | %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
 logger = logging.getLogger(__name__)
-
 
 CLIP_MIN, CLIP_MAX = 0, 20
 
 
 def main() -> None:
+    """Ejecuta el pipeline de inferencia y guarda el archivo submission.csv."""
     logger.info("Inicio del script inference.py")
 
     # Crear carpeta de predicciones
@@ -57,11 +52,11 @@ def main() -> None:
     # -------------------------------
     # Cargar datos
     # -------------------------------
-    logger.info(f"Cargando X_test desde {x_test_path}")
-    X_test = pd.read_csv(x_test_path)
-    logger.info(f"X_test shape: {X_test.shape}")
+    logger.info("Cargando X_test desde %s", x_test_path)
+    x_test = pd.read_csv(x_test_path)
+    logger.info("X_test shape: %s", x_test.shape)
 
-    logger.info(f"Cargando IDs desde {raw_test_path}")
+    logger.info("Cargando IDs desde %s", raw_test_path)
     raw_test = pd.read_csv(raw_test_path)
 
     if "ID" not in raw_test.columns:
@@ -69,35 +64,36 @@ def main() -> None:
 
     ids = raw_test["ID"].copy()
 
+    if len(ids) != len(x_test):
+        raise ValueError(
+            f"Longitud IDs ({len(ids)}) != filas X_test ({len(x_test)}). Revisa archivos de entrada."
+        )
+
     # -------------------------------
     # Cargar modelo
     # -------------------------------
-    logger.info(f"Cargando modelo desde {model_path}")
+    logger.info("Cargando modelo desde %s", model_path)
     model = joblib.load(model_path)
 
     # -------------------------------
     # Predicción
     # -------------------------------
     logger.info("Generando predicciones")
-    preds = model.predict(X_test)
+    preds = model.predict(x_test)
     preds = np.clip(preds, CLIP_MIN, CLIP_MAX)
 
     # -------------------------------
     # Crear submission
     # -------------------------------
-    submission = pd.DataFrame({
-        "ID": ids,
-        "item_cnt_month": preds
-    })
+    submission = pd.DataFrame({"ID": ids, "item_cnt_month": preds})
 
     out_path = PREDICTIONS_DIR / "submission.csv"
     submission.to_csv(out_path, index=False)
 
     logger.info("Inference finalizado correctamente")
-    logger.info(f"Submission guardado en: {out_path}")
-    logger.info(f"Total filas: {len(submission)}")
+    logger.info("Submission guardado en: %s", out_path)
+    logger.info("Total filas: %d", len(submission))
 
 
 if __name__ == "__main__":
     main()
-

@@ -27,3 +27,10 @@ data/predictions/
 .DS_Store
 Thumbs.db
 .vscode/
+
+*.log
+__pycache__/
+artifacts/*
+!artifacts/logs/
+!artifacts/logs/.gitkeep
+

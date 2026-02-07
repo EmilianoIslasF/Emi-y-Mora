@@ -5,7 +5,6 @@ Escribe logs en consola y en artifacts/logs/.
 
 import logging
 from datetime import datetime
-from pathlib import Path
 
 from src.utils.paths import ARTIFACTS_DIR
 
@@ -43,5 +42,5 @@ def setup_logger(script_name: str) -> logging.Logger:
     logger.addHandler(file_handler)
     logger.addHandler(stream_handler)
 
-    logger.info(f"Logger inicializado. Archivo: {log_file}")
+    logger.info("Logger inicializado. Archivo: %s", log_file)
     return logger
