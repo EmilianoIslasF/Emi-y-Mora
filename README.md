@@ -7,7 +7,7 @@ Luego entrena un modelo baseline (Ridge) y un modelo principal (Gradient Boostin
 
 ---
 ## Estructura del repositorio 
-.
+
 ├── .git
 │   ├── HEAD
 │   ├── branches
