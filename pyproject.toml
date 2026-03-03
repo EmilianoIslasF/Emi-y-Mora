@@ -12,6 +12,7 @@ dependencies = [
     "pandas>=2.3.3",
     "scikit-learn>=1.8.0",
     "seaborn>=0.13.2",
+    "tree>=0.2.4",
 ]
 
 [dependency-groups]
