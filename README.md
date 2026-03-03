@@ -296,8 +296,23 @@ Kaggle leaderboard / score: <1.00129>
 - pylint
 
 
-## Calidad de código (Pylint)
+## Calidad de código (Pylint)<img width="678" height="253" alt="Captura de pantalla 2026-03-02 130243" src="https://github.com/user-attachments/assets/f94fab97-6fa1-44b2-896a-f8b2cfbd13fb" />
 
-![Pylint 10/10](assets/pylint_10of10.png)
+#Screenshots ![Uploading Captura de pantalla 2026-03-02 130243.png…]()
+
+<img width="1110" height="414" alt="Captura de pantalla 2026-03-02 175402" src="https://github.com/user-attachments/assets/f23aee16-2fe8-4023-86c3-8e8667c3aa54" />
+
+<img width="1051" height="289" alt="Captura de pantalla 2026-03-02 175608" src="https://github.com/user-attachments/assets/1f4e1c2c-e822-4871-aae4-c00ffa7e5669" />
+
+
+![Uploading Captura de pantalla 2026-03-02 130243.png…]()
+<img width="858" height="363" alt="Captura de pantalla 2026-03-02 141146" src="https://github.com/user-attachments/assets/af8b4f8f-274b-4dc3-99c0-a0acaee56e08" />
+
+<img width="798" height="442" alt="Captura de pantalla 2026-03-02 184358" src="https://github.com/user-attachments/assets/17e7bed5-a295-40a6-9b6f-f8ce53c3e58a" />
+
+
+![Pylint 10/10](assets/pylint_10of10.png)<img width="1090" height="381" alt="Captura de pantalla 2026-03-02 191359" src="https://github.com/user-attachments/assets/82eacc48-57f6-4873-bd10-429579bee4a3" />
+
 
 ---
+
