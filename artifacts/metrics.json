@@ -1,9 +1,14 @@
 {
-  "rmse_ridge_valid": 0.9806157819368521,
-  "rmse_gbr_valid_clipped": 0.9654525028570242,
-  "mae_gbr_valid_clipped": 0.3426967236337557,
-  "r2_gbr_valid_clipped": 0.2779174957715824,
-  "mape_gbr_valid_clipped": 0.7240210993826123,
+  "baseline": {
+    "model": "Ridge",
+    "rmse_valid": 0.9806157819368633
+  },
+  "gbr_valid_clipped": {
+    "rmse": 0.9654525028570242,
+    "mae": 0.3426967236337557,
+    "r2": 0.2779174957715824,
+    "mape": 0.7240210993826123
+  },
   "target_clip": [
     0,
     20

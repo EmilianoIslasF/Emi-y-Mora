@@ -16,6 +16,9 @@ import time
 import numpy as np
 import pandas as pd
 
+import argparse
+from pathlib import Path
+
 from src.utils.features import add_lag
 from src.utils.logging_config import setup_logger
 from src.utils.paths import INFERENCE_DIR, PREP_DIR, RAW_DIR
@@ -28,6 +31,84 @@ pd.set_option("display.max_columns", 100)
 COLUMNA_TARGET = "item_cnt_month"
 LAGS = [1, 2, 3, 6, 12]
 CLIP_MIN, CLIP_MAX = 0, 20
+
+
+def _parse_lags(lags_str: str) -> list[int]:
+    """
+    Parsea lags desde string tipo "1,2,3,6,12" o "1 2 3 6 12".
+    Si viene vacío, regresa los defaults actuales.
+    """
+    s = (lags_str or "").strip()
+    if not s:
+        return LAGS
+    # soporta coma o espacios
+    parts = [p.strip() for p in s.replace(",", " ").split()]
+    return [int(p) for p in parts if p]
+
+
+def parse_args() -> argparse.Namespace:
+    """
+    CLI para permitir rutas/hiperparámetros desde Docker.
+    Importante: con defaults se conserva el comportamiento actual.
+    """
+    p = argparse.ArgumentParser(description="Preprocessing step (raw -> prep/inference).")
+
+    p.add_argument(
+        "--raw-dir",
+        type=str,
+        default=str(RAW_DIR),
+        help="Directorio con CSVs raw (sales_train.csv, items.csv, test.csv).",
+    )
+    p.add_argument(
+        "--prep-dir",
+        type=str,
+        default=str(PREP_DIR),
+        help="Directorio de salida para splits de entrenamiento/validación (data/prep).",
+    )
+    p.add_argument(
+        "--inference-dir",
+        type=str,
+        default=str(INFERENCE_DIR),
+        help="Directorio de salida para X_test de inferencia (data/inference).",
+    )
+
+    p.add_argument(
+        "--clip-min",
+        type=float,
+        default=float(CLIP_MIN),
+        help="Valor mínimo para clipping del target item_cnt_month.",
+    )
+    p.add_argument(
+        "--clip-max",
+        type=float,
+        default=float(CLIP_MAX),
+        help="Valor máximo para clipping del target item_cnt_month.",
+    )
+    p.add_argument(
+        "--lags",
+        type=str,
+        default=",".join(map(str, LAGS)),
+        help='Lista de lags, por ejemplo: "1,2,3,6,12".',
+    )
+
+    return p.parse_args()
+
+
+def _aplicar_args(args: argparse.Namespace) -> None:
+    """
+    Aplica args a las variables globales del módulo.
+    Con defaults, no cambia nada vs el comportamiento actual.
+    """
+    global RAW_DIR, PREP_DIR, INFERENCE_DIR, CLIP_MIN, CLIP_MAX, LAGS
+
+    RAW_DIR = Path(args.raw_dir)
+    PREP_DIR = Path(args.prep_dir)
+    INFERENCE_DIR = Path(args.inference_dir)
+
+    CLIP_MIN = int(args.clip_min) if float(args.clip_min).is_integer() else float(args.clip_min)
+    CLIP_MAX = int(args.clip_max) if float(args.clip_max).is_integer() else float(args.clip_max)
+
+    LAGS = _parse_lags(args.lags)
 
 
 def cargar_datos_raw(logger: logging.Logger) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
@@ -226,6 +307,9 @@ def guardar_outputs(
 
 def main() -> None:
     """Ejecuta el pipeline completo de preparación de datos."""
+    args = parse_args()
+    _aplicar_args(args)
+
     logger = setup_logger("prep")
     start_time = time.time()
     logger.info("Inicio del script prep.py")
