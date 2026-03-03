@@ -14,3 +14,4 @@ RUN pip install --no-cache-dir -U pip \
     PyYAML
 
 CMD ["python", "-m", "src.prep"]
+ENTRYPOINT ["python","-m","src.prep"]

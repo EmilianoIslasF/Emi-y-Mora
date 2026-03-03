@@ -28,9 +28,60 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from src.utils.logging_config import setup_logger
 from src.utils.paths import ARTIFACTS_DIR, PREP_DIR
 
+import argparse
+
 TARGET_COL = "item_cnt_month"
 CLIP_MIN, CLIP_MAX = 0, 20
 SEED = 42
+
+
+def parse_args() -> argparse.Namespace:
+    """
+    CLI para permitir rutas y (al menos) hiperparámetros desde Docker.
+    Importante: con defaults se conserva el comportamiento actual.
+    """
+    p = argparse.ArgumentParser(description="Training step (prep -> model).")
+
+    # Paths
+    p.add_argument(
+        "--prep-dir",
+        type=str,
+        default=str(PREP_DIR),
+        help="Directorio con X_train/y_train/X_valid/y_valid (data/prep).",
+    )
+    p.add_argument(
+        "--artifacts-dir",
+        type=str,
+        default=str(ARTIFACTS_DIR),
+        help="Directorio para guardar artefactos (artifacts/).",
+    )
+    p.add_argument(
+        "--model-name",
+        type=str,
+        default="model.joblib",
+        help="Nombre del archivo del modelo a guardar.",
+    )
+    p.add_argument(
+        "--metrics-name",
+        type=str,
+        default="metrics.json",
+        help="Nombre del archivo de métricas a guardar.",
+    )
+
+    # Ridge
+    p.add_argument("--alpha", type=float, default=1.0, help="Alpha para Ridge.")
+
+    # GradientBoostingRegressor
+    p.add_argument("--n-estimators", type=int, default=100)
+    p.add_argument("--learning-rate", type=float, default=0.05)
+    p.add_argument("--max-depth", type=int, default=4)
+    p.add_argument("--seed", type=int, default=SEED)
+
+    # Clipping
+    p.add_argument("--clip-min", type=float, default=float(CLIP_MIN))
+    p.add_argument("--clip-max", type=float, default=float(CLIP_MAX))
+
+    return p.parse_args()
 
 
 @dataclass
@@ -128,16 +179,25 @@ def guardar_artefactos(
 
 def main() -> None:
     """Ejecuta el pipeline de entrenamiento y guarda artefactos."""
+    args = parse_args()
+
+    global CLIP_MIN, CLIP_MAX
+    CLIP_MIN = int(args.clip_min) if float(args.clip_min).is_integer() else float(args.clip_min)
+    CLIP_MAX = int(args.clip_max) if float(args.clip_max).is_integer() else float(args.clip_max)
+
+    prep_dir = Path(args.prep_dir)
+    artifacts_dir = Path(args.artifacts_dir)
+
     logger = setup_logger("train")
     start_time = time.time()
     logger.info("Inicio del script train.py")
 
     # 1) Cargar datos
-    x_train, y_train, x_valid, y_valid = cargar_datos_prep(logger)
+    x_train, y_train, x_valid, y_valid = cargar_datos_prep(logger, prep_dir=prep_dir)
 
     # 2) Baseline Ridge
     logger.info("Entrenando baseline Ridge...")
-    ridge = entrenar_ridge(x_train, y_train, alpha=1.0)
+    ridge = entrenar_ridge(x_train, y_train, alpha=args.alpha)
     pred_ridge = ridge.predict(x_valid)
     rmse_ridge = float(np.sqrt(mean_squared_error(y_valid, pred_ridge)))
     logger.info("Ridge RMSE (valid, sin clip): %.4f", rmse_ridge)
@@ -145,10 +205,10 @@ def main() -> None:
     # 3) Modelo principal
     logger.info("Entrenando modelo principal (GradientBoostingRegressor)...")
     gbr_params: dict[str, Any] = {
-        "n_estimators": 100,
-        "learning_rate": 0.05,
-        "max_depth": 4,
-        "random_state": SEED,
+        "n_estimators": args.n_estimators,
+        "learning_rate": args.learning_rate,
+        "max_depth": args.max_depth,
+        "random_state": args.seed,
     }
     gbr = entrenar_gbr(x_train, y_train, **gbr_params)
 
@@ -180,9 +240,16 @@ def main() -> None:
         "features": list(x_train.columns),
         "model_name": "GradientBoostingRegressor",
         "model_params": gbr_params,
-        "seed": SEED,
+        "seed": args.seed,
     }
-    guardar_artefactos(logger, gbr, metrics)
+    guardar_artefactos(
+        logger,
+        gbr,
+        metrics,
+        artifacts_dir=artifacts_dir,
+        model_name=args.model_name,
+        metrics_name=args.metrics_name,
+    )
 
     duration = time.time() - start_time
     logger.info("train.py terminado correctamente en %.2f segundos", duration)
