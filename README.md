@@ -1,30 +1,67 @@
-# Emi-y-Mora — ML Pipeline (Tarea 03)
+# Emi-y-Mora — ML Pipeline (Tarea 04 · MLOps)
 
-Este repositorio implementa un pipeline **end-to-end** para un problema de predicción de demanda mensual por **tienda–producto**. A partir de datos crudos (`data/raw/`), el proyecto construye un dataset a nivel mensual, genera *features* (categoría, estacionalidad, lags y agregados) y produce particiones temporales de entrenamiento/validación.
+Este repositorio implementa un pipeline **end-to-end** para un problema de predicción de demanda mensual por **tienda–producto**. A partir de datos crudos (`data/raw/`), el proyecto construye un dataset a nivel mensual, genera *features* (categoría, estacionalidad, lags y agregados) y produce particiones temporales de entrenamiento/validación e insumos para inferencia.
 
-Luego entrena un modelo baseline (Ridge) y un modelo principal (Gradient Boosting Regressor), evalúa con métricas estándar y guarda artefactos reproducibles. Finalmente, corre inferencia en batch para generar el archivo `submission.csv` 
+Luego entrena un modelo baseline (**Ridge**) y un modelo principal (**GradientBoostingRegressor**), evalúa con métricas estándar y guarda artefactos reproducibles. Finalmente, corre inferencia en batch para generar `submission.csv`.
 
+En esta **Tarea 04 (MLOps)** se agrega: estrategia profesional de branching, contenedores Docker por step, ejecución en EC2, ejecución por CLI con argumentos e hiperparámetros, y pruebas unitarias con pytest organizadas por step.
 
 ---
+
+## Descripción del proyecto
+
+- **Objetivo:** predecir `item_cnt_month` (ventas mensuales) por `shop_id` × `item_id`.
+- **Entrada:** CSVs del dataset en `data/raw/`.
+- **Salida final:** `data/predictions/submission.csv`.
+- **Clipping del target/predicción:** `[0, 20]`.
+
+---
+
+## Estructura del repositorio
+
+>
+
 ## Estructura del repositorio 
 .
+├── .dockerignore
+├── .gitignore
+├── .pylintrc
+├── 1C_Reporte.pdf
+├── README.md
 ├── artifacts
+│   ├── 1C_Reporte.pdf
 │   ├── logs
 │   │   ├── inference_20260205_114954.log
 │   │   ├── prep_20260205_103330.log
 │   │   ├── prep_20260206_180603.log
-│   │   └── train_20260205_105322.log
-│   ├── 1C_Reporte.pdf
+│   │   ├── prep_20260302_192156.log
+│   │   ├── prep_20260302_193819.log
+│   │   ├── prep_20260302_194009.log
+│   │   ├── prep_20260302_194337.log
+│   │   ├── prep_20260302_195217.log
+│   │   ├── prep_20260303_004525.log
+│   │   ├── train_20260205_105322.log
+│   │   ├── train_20260302_192349.log
+│   │   ├── train_20260302_192419.log
+│   │   ├── train_20260302_192444.log
+│   │   ├── train_20260302_201232.log
+│   │   ├── train_20260302_215404.log
+│   │   ├── train_20260302_215907.log
+│   │   └── train_20260302_222312.log
 │   ├── metrics.json
 │   ├── model.joblib
 │   └── modelo_final.joblib
 ├── assets
 │   └── pylint_10of10.png
+├── conftest.py
 ├── data
+│   ├── inference
+│   │   └── X_test.csv
 │   ├── predictions
 │   │   └── submission.csv
 │   ├── prep
 │   │   ├── X_test.csv
+│   │   ├── X_train.csv
 │   │   ├── X_valid.csv
 │   │   ├── y_train.csv
 │   │   └── y_valid.csv
@@ -35,24 +72,40 @@ Luego entrena un modelo baseline (Ridge) y un modelo principal (Gradient Boostin
 │       ├── sample_submission.csv
 │       ├── shops.csv
 │       └── test.csv
+├── docker
+│   ├── inference
+│   │   └── Dockerfile
+│   ├── prep
+│   │   └── Dockerfile
+│   └── train
+│       └── Dockerfile
 ├── notebooks
 │   ├── Entre_eval_prediccion.ipynb
 │   ├── eda01.ipynb
 │   └── transform_fitures.ipynb
+├── pyproject.toml
+├── repo_tree.txt
 ├── src
-│   ├── utils
-│   │   ├── __init__.py
-│   │   ├── features.py
-│   │   ├── logging_config.py
-│   │   └── paths.py
 │   ├── __init__.py
 │   ├── inference.py
+│   ├── inference_step
+│   │   └── test
+│   │       └── test_inference.py
 │   ├── prep.py
-│   └── train.py
-├── 1C_Reporte.pdf
-├── README.md
-├── pyproject.toml
+│   ├── preprocessing_step
+│   │   └── test
+│   │       └── test_prep.py
+│   ├── train.py
+│   ├── training_step
+│   │   └── test
+│   │       └── test_train.py
+│   └── utils
+│       ├── __init__.py
+│       ├── features.py
+│       ├── logging_config.py
+│       └── paths.py
 └── uv.lock
+
 
 
 
@@ -85,6 +138,128 @@ uv run python -m src.train
 uv run python -m src.inference
 
 ```
+
+## Docker por step (imágenes por etapa)
+
+Se dockeriza cada step del pipeline:
+
+prep (preprocessing / feature engineering)
+
+train (training)
+
+inference (batch predictions)
+
+Build de imágenes (en EC2)
+
+Importante: las imágenes se construyen dentro de la instancia EC2.
+
+docker build -t ml-prep:latest  -f docker/prep/Dockerfile .
+docker build -t ml-train:latest -f docker/train/Dockerfile .
+docker build -t ml-infer:latest -f docker/inference/Dockerfile .
+Ejecución del pipeline completo (Docker)
+
+Recomendación: prep y train pueden tardar; se puede usar tmux para evitar perder el proceso si se corta la conexión.
+
+1) Preprocessing (raw → prep + inference)
+docker run --rm \
+  -v "$(pwd)/data:/app/data" \
+  -v "$(pwd)/artifacts:/app/artifacts" \
+  ml-prep:latest \
+  --raw-dir data/raw \
+  --prep-dir data/prep \
+  --inference-dir data/inference \
+  --clip-min 0 --clip-max 20 \
+  --lags "1,2,3,6,12"
+
+Outputs esperados:
+
+data/prep/X_train.csv, data/prep/y_train.csv, data/prep/X_valid.csv, data/prep/y_valid.csv
+
+data/inference/X_test.csv
+
+2) Training (prep → artifacts)
+docker run --rm \
+  -v "$(pwd)/data:/app/data" \
+  -v "$(pwd)/artifacts:/app/artifacts" \
+  ml-train:latest \
+  --prep-dir data/prep \
+  --artifacts-dir artifacts \
+  --model-name model.joblib \
+  --metrics-name metrics.json \
+  --alpha 1.0 \
+  --n-estimators 100 \
+  --learning-rate 0.05 \
+  --max-depth 4 \
+  --seed 42 \
+  --clip-min 0 --clip-max 20
+
+Outputs esperados:
+
+artifacts/model.joblib
+
+artifacts/metrics.json
+
+logs en artifacts/logs/
+
+3) Inference (X_test + model → submission)
+docker run --rm \
+  -v "$(pwd)/data:/app/data" \
+  -v "$(pwd)/artifacts:/app/artifacts" \
+  ml-infer:latest \
+  --x-test-path data/inference/X_test.csv \
+  --raw-test-path data/raw/test.csv \
+  --model-path artifacts/model.joblib \
+  --output-path data/predictions/submission.csv \
+  --clip-min 0 --clip-max 20
+
+Output esperado:
+
+data/predictions/submission.csv
+
+Ejecución de Contenedores (CLI + argumentos)
+
+Cada step soporta CLI con argparse. Para inspeccionar argumentos:
+
+docker run --rm ml-prep:latest --help
+docker run --rm ml-train:latest --help
+docker run --rm ml-infer:latest --help
+
+Ejemplo (inference con argumentos):
+
+docker run --rm \
+  -v "$(pwd)/data:/app/data" \
+  -v "$(pwd)/artifacts:/app/artifacts" \
+  ml-infer:latest \
+  --x-test-path data/inference/X_test.csv \
+  --raw-test-path data/raw/test.csv \
+  --model-path artifacts/model.joblib \
+  --output-path data/predictions/submission.csv \
+  --clip-min 0 --clip-max 20
+
+Evidencia requerida (EC2):
+
+Screenshot del docker run ... --help
+
+Screenshot del docker run ... (con logs visibles)
+
+Pruebas Unitarias (pytest)
+
+Las pruebas unitarias viven dentro de cada step:
+
+src/preprocessing_step/test/test_prep.py
+
+src/training_step/test/test_train.py
+
+src/inference_step/test/test_inference.py
+
+Ejecutar tests desde la raíz:
+
+uv run pytest src/ -v
+
+Se incluye conftest.py para asegurar que el paquete src sea importable durante la ejecución de pruebas.
+
+
+
 
 ## Scripts: descripción (inputs/outputs)
 
@@ -125,7 +300,4 @@ Kaggle leaderboard / score: <1.00129>
 
 ![Pylint 10/10](assets/pylint_10of10.png)
 
-```
-
-
-
+---
