@@ -90,7 +90,8 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--clip-min", type=float, default=float(CLIP_MIN))
     p.add_argument("--clip-max", type=float, default=float(CLIP_MAX))
 
-    return p.parse_args()
+    args, _ = p.parse_known_args()
+    return args
 
 
 @dataclass
