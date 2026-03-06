@@ -4,14 +4,15 @@ WORKDIR /app
 
 COPY . .
 
-RUN pip install --no-cache-dir -U pip \
- && pip install --no-cache-dir \
-    numpy \
-    pandas \
-    scikit-learn \
-    scipy \
-    joblib \
-    PyYAML
+RUN pip install --no-cache-dir -U pip && \
+    pip install --no-cache-dir \
+        numpy \
+        pandas \
+        scikit-learn \
+        scipy \
+        joblib \
+        PyYAML
 
-CMD ["python", "-m", "src.train"]
-ENTRYPOINT ["python","-m","src.train"]
+ENV PYTHONPATH=/app
+
+ENTRYPOINT ["python", "-m", "src.train"]
