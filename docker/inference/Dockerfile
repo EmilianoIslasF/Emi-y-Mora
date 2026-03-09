@@ -4,14 +4,17 @@ WORKDIR /app
 
 COPY . .
 
-RUN pip install --no-cache-dir -U pip \
- && pip install --no-cache-dir \
-    joblib \
-    numpy \
-    pandas \
-    scikit-learn \
-    scipy \
-    PyYAML
+RUN pip install --no-cache-dir -U pip && \
+    pip install --no-cache-dir \
+        flask \
+        gunicorn \
+        joblib \
+        numpy \
+        pandas \
+        scikit-learn \
+        scipy \
+        PyYAML
 
-CMD ["python", "-m", "src.inference"]
-ENTRYPOINT ["python","-m","src.inference"]
+ENV PYTHONPATH=/app
+
+ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:8080", "src.predictor:app"]
