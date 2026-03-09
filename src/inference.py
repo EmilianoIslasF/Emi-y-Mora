@@ -17,6 +17,9 @@ import pandas as pd
 
 from src.utils.paths import ARTIFACTS_DIR, INFERENCE_DIR, PREDICTIONS_DIR, RAW_DIR
 
+import argparse
+from pathlib import Path
+
 # -------------------------------
 # Logging básico
 # -------------------------------
@@ -26,16 +29,61 @@ logger = logging.getLogger(__name__)
 CLIP_MIN, CLIP_MAX = 0, 20
 
 
+def parse_args() -> argparse.Namespace:
+    """
+    CLI para permitir rutas/hiperparámetros desde Docker.
+    Importante: con defaults se conserva el comportamiento actual.
+    """
+    p = argparse.ArgumentParser(description="Inference step (batch predictions).")
+
+    p.add_argument(
+        "--x-test-path",
+        type=str,
+        default=str(INFERENCE_DIR / "X_test.csv"),
+        help="Ruta al CSV de features X_test (data/inference/X_test.csv).",
+    )
+    p.add_argument(
+        "--raw-test-path",
+        type=str,
+        default=str(RAW_DIR / "test.csv"),
+        help="Ruta al CSV raw de test con columna ID (data/raw/test.csv).",
+    )
+    p.add_argument(
+        "--model-path",
+        type=str,
+        default=str(ARTIFACTS_DIR / "model.joblib"),
+        help="Ruta al modelo entrenado (artifacts/model.joblib).",
+    )
+    p.add_argument(
+        "--output-path",
+        type=str,
+        default=str(PREDICTIONS_DIR / "submission.csv"),
+        help="Ruta de salida para submission.csv (data/predictions/submission.csv).",
+    )
+
+    p.add_argument("--clip-min", type=float, default=float(CLIP_MIN))
+    p.add_argument("--clip-max", type=float, default=float(CLIP_MAX))
+
+    return p.parse_args()
+
+
 def main() -> None:
     """Ejecuta el pipeline de inferencia y guarda el archivo submission.csv."""
+    args = parse_args()
+
+    global CLIP_MIN, CLIP_MAX
+    CLIP_MIN = int(args.clip_min) if float(args.clip_min).is_integer() else float(args.clip_min)
+    CLIP_MAX = int(args.clip_max) if float(args.clip_max).is_integer() else float(args.clip_max)
+
     logger.info("Inicio del script inference.py")
 
-    # Crear carpeta de predicciones
-    PREDICTIONS_DIR.mkdir(parents=True, exist_ok=True)
+    x_test_path = Path(args.x_test_path)
+    raw_test_path = Path(args.raw_test_path)
+    model_path = Path(args.model_path)
+    out_path = Path(args.output_path)
 
-    x_test_path = INFERENCE_DIR / "X_test.csv"
-    raw_test_path = RAW_DIR / "test.csv"
-    model_path = ARTIFACTS_DIR / "model.joblib"
+    # Crear carpeta de predicciones
+    out_path.parent.mkdir(parents=True, exist_ok=True)
 
     # -------------------------------
     # Validaciones
@@ -87,7 +135,6 @@ def main() -> None:
     # -------------------------------
     submission = pd.DataFrame({"ID": ids, "item_cnt_month": preds})
 
-    out_path = PREDICTIONS_DIR / "submission.csv"
     submission.to_csv(out_path, index=False)
 
     logger.info("Inference finalizado correctamente")
