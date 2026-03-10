@@ -314,5 +314,20 @@ Kaggle leaderboard / score: <1.00129>
 ![Pylint 10/10](assets/pylint_10of10.png)<img width="1090" height="381" alt="Captura de pantalla 2026-03-02 191359" src="https://github.com/user-attachments/assets/82eacc48-57f6-4873-bd10-429579bee4a3" />
 
 
+#Tarea 5
+
+<img width="921" height="250" alt="image" src="https://github.com/user-attachments/assets/83b01ed0-37f2-4f7c-a006-53861a062ec7" />
+<img width="921" height="166" alt="image" src="https://github.com/user-attachments/assets/30bfd32f-9552-412e-809d-685208b882bd" />
+<img width="921" height="479" alt="image" src="https://github.com/user-attachments/assets/a1a13ed0-b216-4b0c-9a53-3a4d537d2213" />
+<img width="921" height="409" alt="image" src="https://github.com/user-attachments/assets/7f21cf42-a0b0-495a-a2a9-8af428c57602" />
+<img width="921" height="382" alt="image" src="https://github.com/user-attachments/assets/87438a80-7d0e-47f3-9c3e-8a39a6691d1f" />
+
+
+
+
+
+
+
 ---
+
 
