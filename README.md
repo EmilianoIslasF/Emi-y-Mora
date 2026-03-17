@@ -320,6 +320,26 @@ Kaggle leaderboard / score: <1.00129>
 <img width="921" height="409" alt="image" src="https://github.com/user-attachments/assets/7f21cf42-a0b0-495a-a2a9-8af428c57602" />
 <img width="921" height="382" alt="image" src="https://github.com/user-attachments/assets/87438a80-7d0e-47f3-9c3e-8a39a6691d1f" />
 
+construye y sube la imagen a ECR
+<img width="921" height="404" alt="image" src="https://github.com/user-attachments/assets/0b600473-a5c4-4a80-a238-6b53dfa70439" />
+
+ 
+El ECR 
+ <img width="921" height="117" alt="image" src="https://github.com/user-attachments/assets/5e4e814f-71f0-49ba-961c-d7cc212e5cbb" />
+
+
+El processing job completed
+<img width="921" height="423" alt="image" src="https://github.com/user-attachments/assets/9f3735ac-67f0-4a15-b2ff-b579d70520e0" />
+
+ 
+4 csv en S3 y el head 
+<img width="921" height="448" alt="image" src="https://github.com/user-attachments/assets/04d2e005-5955-4789-8f36-efca2673095b" />
+<img width="921" height="425" alt="image" src="https://github.com/user-attachments/assets/7078f7ba-747b-4c36-b6c5-f13a6eb90324" />
+
+
+ 
+ 
+
 
 
 
