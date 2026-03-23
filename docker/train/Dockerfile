@@ -1,18 +1,16 @@
-FROM python:3.13-slim
+FROM python:3.12-slim
 
-WORKDIR /app
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/opt/ml/code
 
-COPY . .
+WORKDIR /opt/ml/code
 
-RUN pip install --no-cache-dir -U pip && \
-    pip install --no-cache-dir \
-        numpy \
-        pandas \
-        scikit-learn \
-        scipy \
-        joblib \
-        PyYAML
+COPY pyproject.toml uv.lock ./
+COPY src ./src
+COPY conftest.py ./
 
-ENV PYTHONPATH=/app
+RUN pip install --no-cache-dir uv && \
+    uv pip install --system .
 
 ENTRYPOINT ["python", "-m", "src.train"]

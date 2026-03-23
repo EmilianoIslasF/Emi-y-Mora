@@ -1,19 +1,23 @@
 {
-  "baseline": {
+  "baseline_valid": {
     "model": "Ridge",
-    "rmse_valid": 0.9806157819368633
+    "rmse": 0.9729095789890222,
+    "mae": 0.3705474461521284,
+    "r2": 0.2894772698477306,
+    "mape": 0.6637694939251327
   },
   "gbr_valid_clipped": {
-    "rmse": 0.9654525028570242,
-    "mae": 0.3426967236337557,
-    "r2": 0.2779174957715824,
-    "mape": 0.7240210993826123
+    "rmse": 0.9518848749429624,
+    "mae": 0.34764176880846437,
+    "r2": 0.31985443672450986,
+    "mape": 0.6889525783551049
   },
+  "target_col": "item_cnt_month",
   "target_clip": [
-    0,
-    20
+    0.0,
+    20.0
   ],
-  "features": [
+  "feature_columns": [
     "date_block_num",
     "shop_id",
     "item_id",
@@ -26,6 +30,7 @@
     "item_cnt_month_lag_6",
     "item_cnt_month_lag_12"
   ],
+  "n_features": 11,
   "model_name": "GradientBoostingRegressor",
   "model_params": {
     "n_estimators": 100,

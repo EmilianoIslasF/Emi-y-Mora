@@ -1,17 +1,19 @@
-FROM python:3.13-slim
+FROM python:3.12-slim
 
-WORKDIR /app
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-COPY . .
+WORKDIR /opt/ml/processing/code
 
-RUN pip install --no-cache-dir -U pip \
- && pip install --no-cache-dir \
-    numpy \
-    pandas \
-    scikit-learn \
-    scipy \
-    joblib \
-    PyYAML
+COPY pyproject.toml uv.lock ./
+COPY src ./src
+COPY conftest.py ./
 
-CMD ["python", "-m", "src.prep"]
-ENTRYPOINT ["python","-m","src.prep"]
+RUN pip install --no-cache-dir uv && \
+    uv pip install --system .
+
+# Sin CMD ni ENTRYPOINT.
+# SageMaker ScriptProcessor va a ejecutar el script explícitamente,
+# por ejemplo:
+# python /opt/ml/processing/code/src/prep.py
+# python /opt/ml/processing/code/src/evaluate.py
