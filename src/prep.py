@@ -29,6 +29,24 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+import sys
+from pathlib import Path
+
+# Permite encontrar el paquete src tanto:
+# 1) en ejecución local desde el repo
+# 2) en SageMaker Processing, donde el contenedor ya trae /opt/ml/processing/code/src
+EXTRA_PATHS = [
+    Path("/opt/ml/processing/code"),
+    Path(__file__).resolve().parents[1] if len(Path(__file__).resolve().parents) > 1 else None,
+    Path.cwd(),
+]
+
+for p in EXTRA_PATHS:
+    if p is not None and p.exists():
+        sys.path.insert(0, str(p))
+
+
+
 from src.utils.logging_config import setup_logger
 
 pd.set_option("display.max_columns", 100)

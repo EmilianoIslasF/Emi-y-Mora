@@ -26,6 +26,19 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
+import sys
+from pathlib import Path
+
+EXTRA_PATHS = [
+    Path("/opt/ml/processing/code"),
+    Path(__file__).resolve().parents[1] if len(Path(__file__).resolve().parents) > 1 else None,
+    Path.cwd(),
+]
+
+for p in EXTRA_PATHS:
+    if p is not None and p.exists():
+        sys.path.insert(0, str(p))
+
 from src.utils.logging_config import setup_logger
 
 TARGET_COL = "item_cnt_month"
