@@ -17,4 +17,4 @@ RUN pip install --no-cache-dir -U pip && \
 
 ENV PYTHONPATH=/app
 
-ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:8080", "src.predictor:app"]
+ENTRYPOINT ["python", "serve.py"]

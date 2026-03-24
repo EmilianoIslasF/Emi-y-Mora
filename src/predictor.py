@@ -65,7 +65,11 @@ def invocations():
                 status=415,
                 mimetype="application/json",
             )
-
+   
+for col in ["item_cnt_month", "ID"]:
+    if col in X.columns:
+        X = X.drop(columns=[col])
+        
         preds = loaded_model.predict(X)
         preds = np.clip(preds, CLIP_MIN, CLIP_MAX)
 
