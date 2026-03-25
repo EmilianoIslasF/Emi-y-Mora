@@ -25,11 +25,7 @@ def get_model():
 
 @app.route("/ping", methods=["GET"])
 def ping():
-    try:
-        get_model()
-        return Response(response="OK", status=200)
-    except Exception as e:
-        return Response(response=str(e), status=500)
+    return Response(response="", status=200)
 
 
 @app.route("/invocations", methods=["POST"])
@@ -42,6 +38,7 @@ def invocations():
         if "text/csv" in content_type:
             csv_data = request.data.decode("utf-8")
             X = pd.read_csv(io.StringIO(csv_data))
+
         elif "application/json" in content_type:
             payload = request.get_json()
 
@@ -57,6 +54,7 @@ def invocations():
                     status=400,
                     mimetype="application/json",
                 )
+
         else:
             return Response(
                 response=json.dumps(
@@ -65,11 +63,11 @@ def invocations():
                 status=415,
                 mimetype="application/json",
             )
-   
-for col in ["item_cnt_month", "ID"]:
-    if col in X.columns:
-        X = X.drop(columns=[col])
-        
+
+        for col in ["item_cnt_month", "ID"]:
+            if col in X.columns:
+                X = X.drop(columns=[col])
+
         preds = loaded_model.predict(X)
         preds = np.clip(preds, CLIP_MIN, CLIP_MAX)
 
