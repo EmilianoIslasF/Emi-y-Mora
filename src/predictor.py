@@ -1,28 +1,3 @@
-from __future__ import annotations
-
-import io
-import json
-import os
-
-import joblib
-import numpy as np
-import pandas as pd
-from flask import Flask, Response, request
-
-MODEL_PATH = os.environ.get("MODEL_PATH", "/opt/ml/model/model.joblib")
-CLIP_MIN, CLIP_MAX = 0, 20
-
-app = Flask(__name__)
-model = None
-
-
-def get_model():
-    global model
-    if model is None:
-        model = joblib.load(MODEL_PATH)
-    return model
-
-
 @app.route("/ping", methods=["GET"])
 def ping():
     return Response(response="", status=200)
