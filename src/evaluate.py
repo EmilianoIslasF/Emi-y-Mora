@@ -21,6 +21,10 @@ import time
 from pathlib import Path
 from typing import Any
 
+import tarfile
+import tempfile
+
+
 import joblib
 import numpy as np
 import pandas as pd
@@ -135,10 +139,50 @@ def resolve_file(directory: Path, expected_name: str, suffix: str) -> Path:
     )
 
 
+def _find_first_joblib(directory: Path) -> Path | None:
+    candidates = sorted(directory.rglob("*.joblib"))
+    return candidates[0] if candidates else None
+
+
 def load_model(model_dir: Path, model_name: str, logger: logging.Logger) -> Any:
-    model_path = resolve_file(model_dir, model_name, ".joblib")
-    logger.info("Cargando modelo desde %s", model_path)
-    return joblib.load(model_path)
+    """
+    Soporta dos casos:
+    1) model.joblib directo en model_dir
+    2) model.tar.gz generado por SageMaker Training
+    """
+    direct_model = model_dir / model_name
+    if direct_model.exists():
+        logger.info("Cargando modelo directo desde %s", direct_model)
+        return joblib.load(direct_model)
+
+    tar_candidates = sorted(model_dir.glob("*.tar.gz"))
+    if tar_candidates:
+        tar_path = tar_candidates[0]
+        logger.info("Encontré artifact tar.gz en %s", tar_path)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+
+            with tarfile.open(tar_path, "r:gz") as tar:
+                tar.extractall(path=tmpdir_path)
+
+            extracted_model = _find_first_joblib(tmpdir_path)
+            if extracted_model is None:
+                raise FileNotFoundError(
+                    f"Extraje {tar_path}, pero no encontré ningún .joblib dentro."
+                )
+
+            logger.info("Cargando modelo extraído desde %s", extracted_model)
+            return joblib.load(extracted_model)
+
+    inferred_joblib = _find_first_joblib(model_dir)
+    if inferred_joblib is not None:
+        logger.info("Cargando modelo inferido desde %s", inferred_joblib)
+        return joblib.load(inferred_joblib)
+
+    raise FileNotFoundError(
+        f"No encontré {model_name} en {model_dir}, ni un .tar.gz, ni un único .joblib."
+    )
 
 
 def load_test_data(
